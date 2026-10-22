@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đề 14 - Quản lý Dự án (DTC245200246)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <nav class="navbar navbar-dark bg-primary shadow-sm mb-4">
+    <div class="container">
+      <span class="navbar-brand fw-bold">📋 ĐỀ 14: HỆ THỐNG QUẢN LÝ DỰ ÁN - SV: DTC245200246</span>
+      <span id="db-badge" class="badge bg-warning text-dark">Đang kiểm tra DB...</span>
+    </div>
+  </nav>
+  <div class="container pb-5">
+    <div class="row g-3 mb-4">
+      <div class="col-md-4"><div class="card border-0 shadow-sm text-center p-3"><h6 class="text-muted">TỔNG SỐ DỰ ÁN</h6><h2 id="count-projects" class="fw-bold text-primary mb-0">0</h2></div></div>
+      <div class="col-md-4"><div class="card border-0 shadow-sm text-center p-3"><h6 class="text-muted">TỔNG SỐ CÔNG VIỆC (TASKS)</h6><h2 id="count-tasks" class="fw-bold text-success mb-0">0</h2></div></div>
+      <div class="col-md-4"><div class="card border-0 shadow-sm text-center p-3"><h6 class="text-muted">THÀNH VIÊN THAM GIA</h6><h2 id="count-members" class="fw-bold text-info mb-0">0</h2></div></div>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-header bg-white fw-bold">➕ Thêm Dự Án Mới</div>
+          <div class="card-body">
+            <form id="form-project">
+              <input type="text" id="proj-name" class="form-control mb-2" placeholder="Tên dự án..." required>
+              <input type="text" id="proj-desc" class="form-control mb-2" placeholder="Mô tả ngắn...">
+              <select id="proj-status" class="form-select mb-2"><option value="Planning">Planning</option><option value="In Progress" selected>In Progress</option><option value="Completed">Completed</option></select>
+              <button class="btn btn-primary w-100" type="submit">Lưu Dự Án</button>
+            </form>
+          </div>
+        </div>
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-header bg-white fw-bold">👤 Thêm Thành Viên</div>
+          <div class="card-body">
+            <form id="form-member">
+              <input type="text" id="mem-name" class="form-control mb-2" placeholder="Họ và tên..." required>
+              <input type="email" id="mem-email" class="form-control mb-2" placeholder="Email..." required>
+              <select id="mem-role" class="form-select mb-2"><option value="Project Manager">Project Manager</option><option value="Backend Developer" selected>Backend Developer</option><option value="DevOps Engineer">DevOps Engineer</option></select>
+              <button class="btn btn-info text-white w-100" type="submit">Thêm Thành Viên</button>
+            </form>
+          </div>
+        </div>
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white fw-bold">✅ Giao Công Việc (Task)</div>
+          <div class="card-body">
+            <form id="form-task">
+              <input type="text" id="task-title" class="form-control mb-2" placeholder="Tên công việc..." required>
+              <select id="task-project" class="form-select mb-2"></select>
+              <select id="task-member" class="form-select mb-2"></select>
+              <div class="row g-2 mb-2">
+                <div class="col"><select id="task-priority" class="form-select"><option value="High">Cao</option><option value="Medium" selected>Trung bình</option><option value="Low">Thấp</option></select></div>
+                <div class="col"><select id="task-status" class="form-select"><option value="Todo" selected>Todo</option><option value="In Progress">In Progress</option><option value="Done">Done</option></select></div>
+              </div>
+              <button class="btn btn-success w-100" type="submit">Tạo Task</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm mb-4"><div class="card-header bg-white fw-bold">📂 Danh Sách Dự Án</div><div class="card-body p-0"><table class="table table-hover mb-0"><thead class="table-light"><tr><th>ID</th><th>Tên Dự Án</th><th>Mô tả</th><th>Trạng thái</th></tr></thead><tbody id="table-projects"></tbody></table></div></div>
+        <div class="card border-0 shadow-sm mb-4"><div class="card-header bg-white fw-bold">📌 Danh Sách Công Việc (Tasks)</div><div class="card-body p-0"><table class="table table-hover mb-0"><thead class="table-light"><tr><th>ID</th><th>Công việc</th><th>Dự án</th><th>Phụ trách</th><th>Ưu tiên</th><th>Trạng thái</th></tr></thead><tbody id="table-tasks"></tbody></table></div></div>
+        <div class="card border-0 shadow-sm"><div class="card-header bg-white fw-bold">👥 Danh Sách Thành Viên</div><div class="card-body p-0"><table class="table table-hover mb-0"><thead class="table-light"><tr><th>ID</th><th>Họ tên</th><th>Email</th><th>Vai trò</th></tr></thead><tbody id="table-members"></tbody></table></div></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    async function loadDashboard() {
+      const health = await (await fetch('/api/health')).json();
+      const badge = document.getElementById('db-badge');
+      badge.className = health.db_connected ? 'badge bg-success' : 'badge bg-danger';
+      badge.textContent = health.db_connected ? `PostgreSQL Connected (${health.info.current_user})` : 'DB Disconnected';
+      const data = await (await fetch('/api/dashboard')).json();
+      document.getElementById('count-projects').textContent = data.projects.length;
+      document.getElementById('count-tasks').textContent = data.tasks.length;
+      document.getElementById('count-members').textContent = data.members.length;
+      document.getElementById('table-projects').innerHTML = data.projects.map(p => `<tr><td>#${p.id}</td><td class="fw-semibold">${p.name}</td><td>${p.description || ''}</td><td><span class="badge bg-primary">${p.status}</span></td></tr>`).join('');
+      document.getElementById('table-tasks').innerHTML = data.tasks.map(t => `<tr><td>#${t.id}</td><td class="fw-semibold">${t.title}</td><td>${t.project_name || '-'}</td><td>${t.member_name || '-'}</td><td><span class="badge ${t.priority === 'High' ? 'bg-danger' : 'bg-secondary'}">${t.priority}</span></td><td><span class="badge ${t.status === 'Done' ? 'bg-success' : 'bg-warning text-dark'}">${t.status}</span></td></tr>`).join('');
+      document.getElementById('table-members').innerHTML = data.members.map(m => `<tr><td>#${m.id}</td><td class="fw-semibold">${m.full_name}</td><td>${m.email}</td><td><span class="badge bg-info text-dark">${m.role}</span></td></tr>`).join('');
+      document.getElementById('task-project').innerHTML = data.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+      document.getElementById('task-member').innerHTML = data.members.map(m => `<option value="${m.id}">${m.full_name}</option>`).join('');
+    }
+    document.getElementById('form-project').addEventListener('submit', async (e) => { e.preventDefault(); await fetch('/api/projects', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: document.getElementById('proj-name').value, description: document.getElementById('proj-desc').value, status: document.getElementById('proj-status').value }) }); e.target.reset(); loadDashboard(); });
+    document.getElementById('form-member').addEventListener('submit', async (e) => { e.preventDefault(); await fetch('/api/members', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ full_name: document.getElementById('mem-name').value, email: document.getElementById('mem-email').value, role: document.getElementById('mem-role').value }) }); e.target.reset(); loadDashboard(); });
+    document.getElementById('form-task').addEventListener('submit', async (e) => { e.preventDefault(); await fetch('/api/tasks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: document.getElementById('task-title').value, project_id: document.getElementById('task-project').value, member_id: document.getElementById('task-member').value, priority: document.getElementById('task-priority').value, status: document.getElementById('task-status').value }) }); e.target.reset(); loadDashboard(); });
+    loadDashboard();
+  </script>
+</body>
+</html>
