@@ -1,0 +1,21 @@
+global:
+  scrape_interval: 10s
+  evaluation_interval: 10s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'pm_web_app'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['app:3000']
+
+  - job_name: 'postgres_db'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+
+  - job_name: 'docker_containers'
+    static_configs:
+      - targets: ['cadvisor:8080']
