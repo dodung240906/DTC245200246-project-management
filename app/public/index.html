@@ -3,88 +3,517 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Đề 14 - Quản lý Dự án (DTC245200246)</title>
+  <title>Hệ thống Quản lý Dự án (DTC245200246)</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .status-select {
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.2rem 1.6rem 0.2rem 0.5rem;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      width: auto;
+      display: inline-block;
+    }
+    .btn-action {
+      padding: 0.15rem 0.45rem;
+      font-size: 0.78rem;
+    }
+  </style>
 </head>
 <body class="bg-light">
   <nav class="navbar navbar-dark bg-primary shadow-sm mb-4">
     <div class="container">
-      <span class="navbar-brand fw-bold">📋 ĐỀ 14: HỆ THỐNG QUẢN LÝ DỰ ÁN - SV: DTC245200246</span>
+      <span class="navbar-brand fw-bold">HỆ THỐNG QUẢN LÝ DỰ ÁN - SV: DTC245200246</span>
       <span id="db-badge" class="badge bg-warning text-dark">Đang kiểm tra DB...</span>
     </div>
   </nav>
+
   <div class="container pb-5">
     <div class="row g-3 mb-4">
       <div class="col-md-4"><div class="card border-0 shadow-sm text-center p-3"><h6 class="text-muted">TỔNG SỐ DỰ ÁN</h6><h2 id="count-projects" class="fw-bold text-primary mb-0">0</h2></div></div>
       <div class="col-md-4"><div class="card border-0 shadow-sm text-center p-3"><h6 class="text-muted">TỔNG SỐ CÔNG VIỆC (TASKS)</h6><h2 id="count-tasks" class="fw-bold text-success mb-0">0</h2></div></div>
       <div class="col-md-4"><div class="card border-0 shadow-sm text-center p-3"><h6 class="text-muted">THÀNH VIÊN THAM GIA</h6><h2 id="count-members" class="fw-bold text-info mb-0">0</h2></div></div>
     </div>
+
     <div class="row g-4">
       <div class="col-lg-4">
         <div class="card border-0 shadow-sm mb-4">
-          <div class="card-header bg-white fw-bold">➕ Thêm Dự Án Mới</div>
+          <div class="card-header bg-white fw-bold">Thêm Dự Án Mới</div>
           <div class="card-body">
             <form id="form-project">
               <input type="text" id="proj-name" class="form-control mb-2" placeholder="Tên dự án..." required>
               <input type="text" id="proj-desc" class="form-control mb-2" placeholder="Mô tả ngắn...">
-              <select id="proj-status" class="form-select mb-2"><option value="Planning">Planning</option><option value="In Progress" selected>In Progress</option><option value="Completed">Completed</option></select>
+              <select id="proj-status" class="form-select mb-2">
+                <option value="Planning">Planning</option>
+                <option value="In Progress" selected>In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
               <button class="btn btn-primary w-100" type="submit">Lưu Dự Án</button>
             </form>
           </div>
         </div>
+
         <div class="card border-0 shadow-sm mb-4">
-          <div class="card-header bg-white fw-bold">👤 Thêm Thành Viên</div>
+          <div class="card-header bg-white fw-bold">Thêm Thành Viên</div>
           <div class="card-body">
             <form id="form-member">
               <input type="text" id="mem-name" class="form-control mb-2" placeholder="Họ và tên..." required>
               <input type="email" id="mem-email" class="form-control mb-2" placeholder="Email..." required>
-              <select id="mem-role" class="form-select mb-2"><option value="Project Manager">Project Manager</option><option value="Backend Developer" selected>Backend Developer</option><option value="DevOps Engineer">DevOps Engineer</option></select>
+              <select id="mem-role" class="form-select mb-2">
+                <option value="Project Manager">Project Manager</option>
+                <option value="Backend Developer" selected>Backend Developer</option>
+                <option value="DevOps Engineer">DevOps Engineer</option>
+              </select>
               <button class="btn btn-info text-white w-100" type="submit">Thêm Thành Viên</button>
             </form>
           </div>
         </div>
+
         <div class="card border-0 shadow-sm">
-          <div class="card-header bg-white fw-bold">✅ Giao Công Việc (Task)</div>
+          <div class="card-header bg-white fw-bold">Giao Công Việc (Task)</div>
           <div class="card-body">
             <form id="form-task">
               <input type="text" id="task-title" class="form-control mb-2" placeholder="Tên công việc..." required>
               <select id="task-project" class="form-select mb-2"></select>
               <select id="task-member" class="form-select mb-2"></select>
               <div class="row g-2 mb-2">
-                <div class="col"><select id="task-priority" class="form-select"><option value="High">Cao</option><option value="Medium" selected>Trung bình</option><option value="Low">Thấp</option></select></div>
-                <div class="col"><select id="task-status" class="form-select"><option value="Todo" selected>Todo</option><option value="In Progress">In Progress</option><option value="Done">Done</option></select></div>
+                <div class="col">
+                  <select id="task-priority" class="form-select">
+                    <option value="High">High</option>
+                    <option value="Medium" selected>Medium</option>
+                    <option value="Low">Low</option>
+                  </select>
+                </div>
+                <div class="col">
+                  <select id="task-status" class="form-select">
+                    <option value="Todo" selected>Todo</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Done">Done</option>
+                  </select>
+                </div>
               </div>
               <button class="btn btn-success w-100" type="submit">Tạo Task</button>
             </form>
           </div>
         </div>
       </div>
+
       <div class="col-lg-8">
-        <div class="card border-0 shadow-sm mb-4"><div class="card-header bg-white fw-bold">📂 Danh Sách Dự Án</div><div class="card-body p-0"><table class="table table-hover mb-0"><thead class="table-light"><tr><th>ID</th><th>Tên Dự Án</th><th>Mô tả</th><th>Trạng thái</th></tr></thead><tbody id="table-projects"></tbody></table></div></div>
-        <div class="card border-0 shadow-sm mb-4"><div class="card-header bg-white fw-bold">📌 Danh Sách Công Việc (Tasks)</div><div class="card-body p-0"><table class="table table-hover mb-0"><thead class="table-light"><tr><th>ID</th><th>Công việc</th><th>Dự án</th><th>Phụ trách</th><th>Ưu tiên</th><th>Trạng thái</th></tr></thead><tbody id="table-tasks"></tbody></table></div></div>
-        <div class="card border-0 shadow-sm"><div class="card-header bg-white fw-bold">👥 Danh Sách Thành Viên</div><div class="card-body p-0"><table class="table table-hover mb-0"><thead class="table-light"><tr><th>ID</th><th>Họ tên</th><th>Email</th><th>Vai trò</th></tr></thead><tbody id="table-members"></tbody></table></div></div>
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-header bg-white fw-bold">Danh Sách Dự Án</div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr><th>ID</th><th>Tên Dự Án</th><th>Mô tả</th><th>Trạng thái</th><th class="text-end">Thao tác</th></tr>
+                </thead>
+                <tbody id="table-projects"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-header bg-white fw-bold">Danh Sách Công Việc (Tasks)</div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr><th>ID</th><th>Công việc</th><th>Dự án</th><th>Phụ trách</th><th>Ưu tiên</th><th>Trạng thái</th><th class="text-end">Thao tác</th></tr>
+                </thead>
+                <tbody id="table-tasks"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white fw-bold">Danh Sách Thành Viên</div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr><th>ID</th><th>Họ tên</th><th>Email</th><th>Vai trò</th><th class="text-end">Thao tác</th></tr>
+                </thead>
+                <tbody id="table-members"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- Modal chỉnh sửa Dự án -->
+  <div class="modal fade" id="editProjectModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form class="modal-content" id="form-edit-project">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">Chỉnh sửa Dự Án</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="edit-proj-id">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Tên dự án</label>
+            <input type="text" id="edit-proj-name" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Mô tả</label>
+            <input type="text" id="edit-proj-desc" class="form-control">
+          </div>
+          <div class="mb-2">
+            <label class="form-label fw-semibold">Trạng thái</label>
+            <select id="edit-proj-status" class="form-select">
+              <option value="Planning">Planning</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal chỉnh sửa Công việc (Task) -->
+  <div class="modal fade" id="editTaskModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form class="modal-content" id="form-edit-task">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">Chỉnh sửa Công Việc (Task)</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="edit-task-id">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Tên công việc</label>
+            <input type="text" id="edit-task-title" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Dự án</label>
+            <select id="edit-task-project" class="form-select"></select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Người phụ trách</label>
+            <select id="edit-task-member" class="form-select"></select>
+          </div>
+          <div class="row g-2">
+            <div class="col-6">
+              <label class="form-label fw-semibold">Ưu tiên</label>
+              <select id="edit-task-priority" class="form-select">
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold">Trạng thái</label>
+              <select id="edit-task-status" class="form-select">
+                <option value="Todo">Todo</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Done">Done</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <button type="submit" class="btn btn-success">Lưu thay đổi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    let cachedData = { projects: [], members: [], tasks: [] };
+    let editProjectModalInstance = null;
+    let editTaskModalInstance = null;
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function projectStatusClass(status) {
+      if (status === 'Completed') return 'bg-success text-white border-success';
+      if (status === 'Planning') return 'bg-secondary text-white border-secondary';
+      return 'bg-primary text-white border-primary';
+    }
+
+    function taskStatusClass(status) {
+      if (status === 'Done') return 'bg-success text-white border-success';
+      if (status === 'In Progress') return 'bg-warning text-dark border-warning';
+      return 'bg-warning text-dark border-warning';
+    }
+
+    function priorityClass(priority) {
+      if (priority === 'High') return 'bg-danger text-white border-danger';
+      if (priority === 'Low') return 'bg-info text-dark border-info';
+      return 'bg-secondary text-white border-secondary';
+    }
+
     async function loadDashboard() {
       const health = await (await fetch('/api/health')).json();
       const badge = document.getElementById('db-badge');
       badge.className = health.db_connected ? 'badge bg-success' : 'badge bg-danger';
       badge.textContent = health.db_connected ? `PostgreSQL Connected (${health.info.current_user})` : 'DB Disconnected';
+
       const data = await (await fetch('/api/dashboard')).json();
+      cachedData = data;
+
       document.getElementById('count-projects').textContent = data.projects.length;
       document.getElementById('count-tasks').textContent = data.tasks.length;
       document.getElementById('count-members').textContent = data.members.length;
-      document.getElementById('table-projects').innerHTML = data.projects.map(p => `<tr><td>#${p.id}</td><td class="fw-semibold">${p.name}</td><td>${p.description || ''}</td><td><span class="badge bg-primary">${p.status}</span></td></tr>`).join('');
-      document.getElementById('table-tasks').innerHTML = data.tasks.map(t => `<tr><td>#${t.id}</td><td class="fw-semibold">${t.title}</td><td>${t.project_name || '-'}</td><td>${t.member_name || '-'}</td><td><span class="badge ${t.priority === 'High' ? 'bg-danger' : 'bg-secondary'}">${t.priority}</span></td><td><span class="badge ${t.status === 'Done' ? 'bg-success' : 'bg-warning text-dark'}">${t.status}</span></td></tr>`).join('');
-      document.getElementById('table-members').innerHTML = data.members.map(m => `<tr><td>#${m.id}</td><td class="fw-semibold">${m.full_name}</td><td>${m.email}</td><td><span class="badge bg-info text-dark">${m.role}</span></td></tr>`).join('');
-      document.getElementById('task-project').innerHTML = data.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-      document.getElementById('task-member').innerHTML = data.members.map(m => `<option value="${m.id}">${m.full_name}</option>`).join('');
+
+      document.getElementById('table-projects').innerHTML = data.projects.map(p => `
+        <tr>
+          <td>#${p.id}</td>
+          <td class="fw-semibold">${escapeHtml(p.name)}</td>
+          <td>${escapeHtml(p.description || '')}</td>
+          <td>
+            <select class="form-select form-select-sm status-select ${projectStatusClass(p.status)}"
+                    onchange="updateProjectStatus(${p.id}, this.value)">
+              <option class="bg-white text-dark" value="Planning" ${p.status === 'Planning' ? 'selected' : ''}>Planning</option>
+              <option class="bg-white text-dark" value="In Progress" ${p.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+              <option class="bg-white text-dark" value="Completed" ${p.status === 'Completed' ? 'selected' : ''}>Completed</option>
+            </select>
+          </td>
+          <td class="text-end text-nowrap">
+            <button class="btn btn-outline-primary btn-action me-1" onclick="openEditProject(${p.id})">Sửa</button>
+            <button class="btn btn-outline-danger btn-action" onclick="deleteProject(${p.id})">Xóa</button>
+          </td>
+        </tr>
+      `).join('');
+
+      document.getElementById('table-tasks').innerHTML = data.tasks.map(t => `
+        <tr>
+          <td>#${t.id}</td>
+          <td class="fw-semibold">${escapeHtml(t.title)}</td>
+          <td>${escapeHtml(t.project_name || '-')}</td>
+          <td>${escapeHtml(t.member_name || '-')}</td>
+          <td>
+            <select class="form-select form-select-sm status-select ${priorityClass(t.priority)}"
+                    onchange="updateTaskField(${t.id}, { priority: this.value })">
+              <option class="bg-white text-dark" value="High" ${t.priority === 'High' ? 'selected' : ''}>High</option>
+              <option class="bg-white text-dark" value="Medium" ${t.priority === 'Medium' ? 'selected' : ''}>Medium</option>
+              <option class="bg-white text-dark" value="Low" ${t.priority === 'Low' ? 'selected' : ''}>Low</option>
+            </select>
+          </td>
+          <td>
+            <select class="form-select form-select-sm status-select ${taskStatusClass(t.status)}"
+                    onchange="updateTaskField(${t.id}, { status: this.value })">
+              <option class="bg-white text-dark" value="Todo" ${t.status === 'Todo' ? 'selected' : ''}>Todo</option>
+              <option class="bg-white text-dark" value="In Progress" ${t.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+              <option class="bg-white text-dark" value="Done" ${t.status === 'Done' ? 'selected' : ''}>Done</option>
+            </select>
+          </td>
+          <td class="text-end text-nowrap">
+            <button class="btn btn-outline-primary btn-action me-1" onclick="openEditTask(${t.id})">Sửa</button>
+            <button class="btn btn-outline-danger btn-action" onclick="deleteTask(${t.id})">Xóa</button>
+          </td>
+        </tr>
+      `).join('');
+
+      document.getElementById('table-members').innerHTML = data.members.map(m => `
+        <tr>
+          <td>#${m.id}</td>
+          <td class="fw-semibold">${escapeHtml(m.full_name)}</td>
+          <td>${escapeHtml(m.email)}</td>
+          <td>
+            <select class="form-select form-select-sm status-select bg-info text-dark border-info"
+                    onchange="updateMemberRole(${m.id}, this.value)">
+              <option class="bg-white text-dark" value="Project Manager" ${m.role === 'Project Manager' ? 'selected' : ''}>Project Manager</option>
+              <option class="bg-white text-dark" value="Backend Developer" ${m.role === 'Backend Developer' ? 'selected' : ''}>Backend Developer</option>
+              <option class="bg-white text-dark" value="DevOps Engineer" ${m.role === 'DevOps Engineer' ? 'selected' : ''}>DevOps Engineer</option>
+            </select>
+          </td>
+          <td class="text-end text-nowrap">
+            <button class="btn btn-outline-danger btn-action" onclick="deleteMember(${m.id})">Xóa</button>
+          </td>
+        </tr>
+      `).join('');
+
+      const projOptions = data.projects.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
+      const memOptions = data.members.map(m => `<option value="${m.id}">${escapeHtml(m.full_name)}</option>`).join('');
+      document.getElementById('task-project').innerHTML = projOptions;
+      document.getElementById('task-member').innerHTML = memOptions;
+      document.getElementById('edit-task-project').innerHTML = projOptions;
+      document.getElementById('edit-task-member').innerHTML = memOptions;
     }
-    document.getElementById('form-project').addEventListener('submit', async (e) => { e.preventDefault(); await fetch('/api/projects', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: document.getElementById('proj-name').value, description: document.getElementById('proj-desc').value, status: document.getElementById('proj-status').value }) }); e.target.reset(); loadDashboard(); });
-    document.getElementById('form-member').addEventListener('submit', async (e) => { e.preventDefault(); await fetch('/api/members', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ full_name: document.getElementById('mem-name').value, email: document.getElementById('mem-email').value, role: document.getElementById('mem-role').value }) }); e.target.reset(); loadDashboard(); });
-    document.getElementById('form-task').addEventListener('submit', async (e) => { e.preventDefault(); await fetch('/api/tasks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: document.getElementById('task-title').value, project_id: document.getElementById('task-project').value, member_id: document.getElementById('task-member').value, priority: document.getElementById('task-priority').value, status: document.getElementById('task-status').value }) }); e.target.reset(); loadDashboard(); });
+
+    // Đổi nhanh trạng thái Dự án
+    async function updateProjectStatus(id, status) {
+      await fetch(`/api/projects/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      loadDashboard();
+    }
+
+    // Mở hộp thoại sửa Dự án
+    function openEditProject(id) {
+      const p = cachedData.projects.find(item => item.id === id);
+      if (!p) return;
+      document.getElementById('edit-proj-id').value = p.id;
+      document.getElementById('edit-proj-name').value = p.name;
+      document.getElementById('edit-proj-desc').value = p.description || '';
+      document.getElementById('edit-proj-status').value = p.status;
+      if (!editProjectModalInstance) {
+        editProjectModalInstance = new bootstrap.Modal(document.getElementById('editProjectModal'));
+      }
+      editProjectModalInstance.show();
+    }
+
+    document.getElementById('form-edit-project').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('edit-proj-id').value;
+      await fetch(`/api/projects/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: document.getElementById('edit-proj-name').value,
+          description: document.getElementById('edit-proj-desc').value,
+          status: document.getElementById('edit-proj-status').value
+        })
+      });
+      editProjectModalInstance.hide();
+      loadDashboard();
+    });
+
+    // Xóa Dự án
+    async function deleteProject(id) {
+      if (!confirm(`Bạn có chắc chắn muốn xóa dự án #${id} không?`)) return;
+      await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+      loadDashboard();
+    }
+
+    // Đổi nhanh trạng thái hoặc độ ưu tiên Task
+    async function updateTaskField(id, payload) {
+      await fetch(`/api/tasks/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      loadDashboard();
+    }
+
+    // Mở hộp thoại sửa Task
+    function openEditTask(id) {
+      const t = cachedData.tasks.find(item => item.id === id);
+      if (!t) return;
+      document.getElementById('edit-task-id').value = t.id;
+      document.getElementById('edit-task-title').value = t.title;
+      document.getElementById('edit-task-project').value = t.project_id || '';
+      document.getElementById('edit-task-member').value = t.member_id || '';
+      document.getElementById('edit-task-priority').value = t.priority;
+      document.getElementById('edit-task-status').value = t.status;
+      if (!editTaskModalInstance) {
+        editTaskModalInstance = new bootstrap.Modal(document.getElementById('editTaskModal'));
+      }
+      editTaskModalInstance.show();
+    }
+
+    document.getElementById('form-edit-task').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('edit-task-id').value;
+      await fetch(`/api/tasks/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: document.getElementById('edit-task-title').value,
+          project_id: document.getElementById('edit-task-project').value,
+          member_id: document.getElementById('edit-task-member').value,
+          priority: document.getElementById('edit-task-priority').value,
+          status: document.getElementById('edit-task-status').value
+        })
+      });
+      editTaskModalInstance.hide();
+      loadDashboard();
+    });
+
+    // Xóa Task
+    async function deleteTask(id) {
+      if (!confirm(`Bạn có chắc chắn muốn xóa công việc #${id} không?`)) return;
+      await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
+      loadDashboard();
+    }
+
+    // Đổi vai trò hoặc xóa Thành viên
+    async function updateMemberRole(id, role) {
+      await fetch(`/api/members/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role })
+      });
+      loadDashboard();
+    }
+
+    async function deleteMember(id) {
+      if (!confirm(`Bạn có chắc chắn muốn xóa thành viên #${id} không?`)) return;
+      await fetch(`/api/members/${id}`, { method: 'DELETE' });
+      loadDashboard();
+    }
+
+    // Thêm mới Dự án, Thành viên, Task
+    document.getElementById('form-project').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: document.getElementById('proj-name').value,
+          description: document.getElementById('proj-desc').value,
+          status: document.getElementById('proj-status').value
+        })
+      });
+      e.target.reset();
+      loadDashboard();
+    });
+
+    document.getElementById('form-member').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await fetch('/api/members', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          full_name: document.getElementById('mem-name').value,
+          email: document.getElementById('mem-email').value,
+          role: document.getElementById('mem-role').value
+        })
+      });
+      e.target.reset();
+      loadDashboard();
+    });
+
+    document.getElementById('form-task').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await fetch('/api/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: document.getElementById('task-title').value,
+          project_id: document.getElementById('task-project').value,
+          member_id: document.getElementById('task-member').value,
+          priority: document.getElementById('task-priority').value,
+          status: document.getElementById('task-status').value
+        })
+      });
+      e.target.reset();
+      loadDashboard();
+    });
+
     loadDashboard();
   </script>
 </body>

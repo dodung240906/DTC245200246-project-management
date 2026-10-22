@@ -2,36 +2,37 @@ services:
   postgres:
     image: postgres:15-alpine
     container_name: pm_postgres
-    restart: unless-stopped
+    restart: always
     env_file: .env
     volumes:
       - pg_data:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
       - backend_net
-    security_opt:
-      - no-new-privileges:true
 
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: pm_pgadmin
-    restart: unless-stopped
+    restart: always
     env_file: .env
+    environment:
+      - PGADMIN_LISTEN_ADDRESS=0.0.0.0
+      - PGADMIN_LISTEN_PORT=5050
     ports:
-      - "5050:80"
+      - "5050:5050"
     depends_on:
       - postgres
     networks:
       - backend_net
       - frontend_net
-    security_opt:
-      - no-new-privileges:true
 
   app:
     build: ./app
     container_name: pm_app
-    restart: unless-stopped
+    restart: always
     env_file: .env
+    ports:
+      - "3000:3000"
     environment:
       - DB_HOST=postgres
       - DB_PORT=5432
@@ -40,13 +41,11 @@ services:
     networks:
       - backend_net
       - frontend_net
-    security_opt:
-      - no-new-privileges:true
 
   nginx:
     image: nginx:1.25-alpine
     container_name: pm_nginx
-    restart: unless-stopped
+    restart: always
     ports:
       - "80:80"
       - "443:443"
@@ -57,26 +56,22 @@ services:
       - app
     networks:
       - frontend_net
-    security_opt:
-      - no-new-privileges:true
 
   postgres-exporter:
     image: prometheuscommunity/postgres-exporter:v0.15.0
     container_name: pm_postgres_exporter
-    restart: unless-stopped
+    restart: always
     environment:
       DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
     depends_on:
       - postgres
     networks:
       - backend_net
-    security_opt:
-      - no-new-privileges:true
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.47.2
     container_name: pm_cadvisor
-    restart: unless-stopped
+    restart: always
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
@@ -88,7 +83,7 @@ services:
   prometheus:
     image: prom/prometheus:v2.51.0
     container_name: pm_prometheus
-    restart: unless-stopped
+    restart: always
     ports:
       - "9090:9090"
     volumes:
@@ -101,13 +96,11 @@ services:
     networks:
       - backend_net
       - frontend_net
-    security_opt:
-      - no-new-privileges:true
 
   grafana:
     image: grafana/grafana:10.4.1
     container_name: pm_grafana
-    restart: unless-stopped
+    restart: always
     ports:
       - "3001:3000"
     env_file: .env
@@ -115,16 +108,42 @@ services:
       - grafana_data:/var/lib/grafana
     depends_on:
       - prometheus
+      - loki
     networks:
       - backend_net
       - frontend_net
-    security_opt:
-      - no-new-privileges:true
+
+  loki:
+    image: grafana/loki:2.9.2
+    container_name: pm_loki
+    restart: always
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+    networks:
+      - backend_net
+
+  promtail:
+    image: grafana/promtail:2.9.2
+    container_name: pm_promtail
+    restart: always
+    command: -config.file=/etc/promtail/config.yml
+    volumes:
+      - ./promtail/promtail-config.yml:/etc/promtail/config.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - loki
+    networks:
+      - backend_net
 
 volumes:
   pg_data:
   prom_data:
   grafana_data:
+  loki_data:
 
 networks:
   frontend_net:

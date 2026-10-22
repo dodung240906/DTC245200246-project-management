@@ -31,7 +31,7 @@ INSERT INTO members (full_name, email, role) VALUES
 ON CONFLICT (email) DO NOTHING;
 
 INSERT INTO projects (name, description, status) VALUES
-('Đề 14 - Hệ thống Quản lý Dự án (DTC245200246)', 'Triển khai Docker Compose, Nginx, Prometheus, Grafana, Loki', 'In Progress'),
+('Hệ thống Quản lý Dự án (DTC245200246)', 'Triển khai Docker Compose, Nginx, Prometheus, Grafana, Loki', 'In Progress'),
 ('Ứng dụng Quản lý Kho vận WMS', 'Tối ưu hóa quy trình nhập xuất kho thời gian thực', 'Planning')
 ON CONFLICT DO NOTHING;
 

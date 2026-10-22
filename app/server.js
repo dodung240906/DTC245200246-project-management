@@ -90,6 +90,7 @@ app.get('/api/dashboard', async (req, res) => {
   }
 });
 
+// ================= PROJECTS CRUD =================
 app.post('/api/projects', async (req, res) => {
   const { name, description, status } = req.body;
   if (!name) return res.status(400).json({ error: 'Ten du an khong duoc de trong' });
@@ -104,13 +105,46 @@ app.post('/api/projects', async (req, res) => {
   }
 });
 
+app.put('/api/projects/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name, description, status } = req.body;
+  try {
+    const current = await pool.query('SELECT * FROM projects WHERE id = $1', [id]);
+    if (current.rows.length === 0) return res.status(404).json({ error: 'Khong tim thay du an' });
+    const updatedName = name !== undefined ? name : current.rows[0].name;
+    const updatedDesc = description !== undefined ? description : current.rows[0].description;
+    const updatedStatus = status !== undefined ? status : current.rows[0].status;
+
+    const result = await pool.query(
+      'UPDATE projects SET name = $1, description = $2, status = $3 WHERE id = $4 RETURNING *',
+      [updatedName, updatedDesc, updatedStatus, id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/projects/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('DELETE FROM tasks WHERE project_id = $1', [id]);
+    const result = await pool.query('DELETE FROM projects WHERE id = $1 RETURNING *', [id]);
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Khong tim thay du an' });
+    res.json({ message: 'Da xoa du an thanh cong', deleted: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ================= MEMBERS CRUD =================
 app.post('/api/members', async (req, res) => {
   const { full_name, email, role } = req.body;
   if (!full_name || !email) return res.status(400).json({ error: 'Ho ten va Email la bat buoc' });
   try {
     const result = await pool.query(
       'INSERT INTO members (full_name, email, role) VALUES ($1, $2, $3) RETURNING *',
-      [full_name, email, role || 'Developer']
+      [full_name, email, role || 'Backend Developer']
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -118,6 +152,39 @@ app.post('/api/members', async (req, res) => {
   }
 });
 
+app.put('/api/members/:id', async (req, res) => {
+  const { id } = req.params;
+  const { full_name, email, role } = req.body;
+  try {
+    const current = await pool.query('SELECT * FROM members WHERE id = $1', [id]);
+    if (current.rows.length === 0) return res.status(404).json({ error: 'Khong tim thay thanh vien' });
+    const updatedName = full_name !== undefined ? full_name : current.rows[0].full_name;
+    const updatedEmail = email !== undefined ? email : current.rows[0].email;
+    const updatedRole = role !== undefined ? role : current.rows[0].role;
+
+    const result = await pool.query(
+      'UPDATE members SET full_name = $1, email = $2, role = $3 WHERE id = $4 RETURNING *',
+      [updatedName, updatedEmail, updatedRole, id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/members/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('UPDATE tasks SET member_id = NULL WHERE member_id = $1', [id]);
+    const result = await pool.query('DELETE FROM members WHERE id = $1 RETURNING *', [id]);
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Khong tim thay thanh vien' });
+    res.json({ message: 'Da xoa thanh vien thanh cong', deleted: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ================= TASKS CRUD =================
 app.post('/api/tasks', async (req, res) => {
   const { project_id, member_id, title, priority, status } = req.body;
   if (!title) return res.status(400).json({ error: 'Tieu de cong viec la bat buoc' });
@@ -127,6 +194,39 @@ app.post('/api/tasks', async (req, res) => {
       [project_id || null, member_id || null, title, priority || 'Medium', status || 'Todo']
     );
     res.status(201).json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/tasks/:id', async (req, res) => {
+  const { id } = req.params;
+  const { project_id, member_id, title, priority, status } = req.body;
+  try {
+    const current = await pool.query('SELECT * FROM tasks WHERE id = $1', [id]);
+    if (current.rows.length === 0) return res.status(404).json({ error: 'Khong tim thay cong viec' });
+    const updatedTitle = title !== undefined ? title : current.rows[0].title;
+    const updatedProj = project_id !== undefined ? project_id : current.rows[0].project_id;
+    const updatedMem = member_id !== undefined ? member_id : current.rows[0].member_id;
+    const updatedPrio = priority !== undefined ? priority : current.rows[0].priority;
+    const updatedStatus = status !== undefined ? status : current.rows[0].status;
+
+    const result = await pool.query(
+      'UPDATE tasks SET title = $1, project_id = $2, member_id = $3, priority = $4, status = $5 WHERE id = $6 RETURNING *',
+      [updatedTitle, updatedProj, updatedMem, updatedPrio, updatedStatus, id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/tasks/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query('DELETE FROM tasks WHERE id = $1 RETURNING *', [id]);
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Khong tim thay cong viec' });
+    res.json({ message: 'Da xoa cong viec thanh cong', deleted: result.rows[0] });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
